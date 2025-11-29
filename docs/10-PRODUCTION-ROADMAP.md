@@ -161,18 +161,29 @@ CDN: Vercel Edge Network
 
 | Item | Description | Format | Status |
 |------|-------------|--------|--------|
-| **DWG Map File** | Camp layout with parcel boundaries | .dwg | ⏳ Pending |
-| **Parcel List** | All parcels with codes and zones | Excel/CSV | ⏳ Pending |
+| **DWG Map File** | Camp layout with parcel boundaries | .dwg | ✅ Received |
+| **Parcel List** | All parcels with codes and zones | Excel/CSV | ✅ Extracted (128 parcels) |
 | **Pricing Tables** | Seasonal prices per zone | Excel/CSV | ⏳ Pending |
 | **Service List** | Additional services with prices | List | ⏳ Pending |
 | **Translations** | Content in HR, DE, FR, IT | Text files | ⏳ Pending |
 | **Admin Accounts** | Initial admin user details | Email list | ⏳ Pending |
 
+### Parcel Inventory (from DWG)
+
+| Zone | Parcel Codes | Count | Type |
+|------|--------------|-------|------|
+| Zone A | A1-A12 | 12 | Tent |
+| Zone B | B1-B43 | 43 | Tent |
+| Zone C | C1-C30 | 30 | Tent |
+| Zone P | P1-P33 | 33 | Camper |
+| Zone F | F1-F10 | 10 | TBD |
+| **Total** | | **128** | |
+
 ### GeoJSON Extraction Process
 
-1. **Client provides**: DWG file of camp map
+1. **Client provides**: DWG file of camp map ✅ Done
 2. **Developer extracts**: Parcel polygons as GeoJSON
-3. **Tools needed**: QGIS (free) or AutoCAD
+3. **Tools needed**: QGIS (free) or manual tracing
 4. **See**: [15-GEOJSON-EXTRACTION-GUIDE.md](./15-GEOJSON-EXTRACTION-GUIDE.md)
 
 ---
@@ -233,12 +244,14 @@ CDN: Vercel Edge Network
 
 ## ❓ Open Questions for Client
 
-1. **Check-in/out times**: Currently 14:00/12:00 - confirm?
-2. **Deposit policy**: 30% deposit required? On confirmation or arrival?
-3. **Cancellation policy**: Refund rules?
-4. **Minimum stay**: Different by season?
+1. ~~**Check-in/out times**~~: ✅ Configurable in admin (default 14:00/12:00)
+2. ~~**Deposit policy**~~: ✅ Configurable in admin (assume 30% for now)
+3. **Cancellation policy**: Refund rules? (TBD - configurable in admin)
+4. **Minimum stay**: Different by season? (configurable per zone)
 5. **Pet policy**: Max number of pets? Extra fee?
-6. **Cashier system details**: Which software? API docs available?
+6. **Cashier system details**: Which software? API docs? (TBD)
+7. **Zone F parcels**: What is Zone F? (F1-F10) - Facilities? Another zone?
+8. **Glamping tents**: Not visible in DWG - where are the 7 glamping units?
 
 ---
 

@@ -370,6 +370,76 @@ CREATE TABLE api_keys (
 );
 
 CREATE INDEX idx_api_keys_hash ON api_keys(key_hash);
+
+
+-- ===========================================
+-- SITE SETTINGS (Configurable via Admin Panel)
+-- ===========================================
+CREATE TABLE site_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  key TEXT NOT NULL UNIQUE,
+  value JSONB NOT NULL,
+  description TEXT,
+  category TEXT DEFAULT 'general',
+  updated_by UUID REFERENCES profiles(id),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Insert default settings
+INSERT INTO site_settings (key, value, description, category) VALUES
+-- Booking Settings
+('check_in_time', '"14:00"', 'Default check-in time', 'booking'),
+('check_out_time', '"12:00"', 'Default check-out time', 'booking'),
+('deposit_percentage', '30', 'Deposit percentage required on confirmation', 'booking'),
+('deposit_required', 'true', 'Whether deposit is required', 'booking'),
+('min_nights_default', '2', 'Default minimum nights stay', 'booking'),
+('max_advance_days', '365', 'How far in advance bookings can be made', 'booking'),
+('booking_confirmation_auto', 'false', 'Auto-confirm bookings or require manual', 'booking'),
+
+-- Cancellation Policy
+('cancellation_free_days', '14', 'Days before check-in for free cancellation', 'cancellation'),
+('cancellation_partial_days', '7', 'Days before check-in for partial refund', 'cancellation'),
+('cancellation_partial_refund', '50', 'Partial refund percentage', 'cancellation'),
+('cancellation_policy_text', '{"en": "Free cancellation up to 14 days before arrival. 50% refund 7-14 days before. No refund within 7 days.", "hr": "Besplatno otkazivanje do 14 dana prije dolaska. 50% povrat 7-14 dana prije. Bez povrata unutar 7 dana."}', 'Cancellation policy text (multilingual)', 'cancellation'),
+
+-- Tourist Tax
+('tourist_tax_adult', '1.20', 'Tourist tax per adult per night (EUR)', 'pricing'),
+('tourist_tax_child', '0.60', 'Tourist tax per child (5-17) per night (EUR)', 'pricing'),
+('tourist_tax_exempt_age', '5', 'Age under which tourist tax is not charged', 'pricing'),
+
+-- Contact Information
+('contact_email', '"info@campholiday.eu"', 'Main contact email', 'contact'),
+('contact_phone', '"+385 21 761 140"', 'Main contact phone', 'contact'),
+('contact_address', '{"line1": "Camp Holiday", "line2": "21465 Jelsa", "line3": "Hvar, Croatia"}', 'Physical address', 'contact'),
+
+-- Business Hours
+('reception_hours', '{"summer": {"open": "08:00", "close": "22:00"}, "winter": {"open": "09:00", "close": "18:00"}}', 'Reception opening hours', 'hours'),
+
+-- Currency
+('currency', '"EUR"', 'Default currency', 'general'),
+('timezone', '"Europe/Zagreb"', 'Site timezone', 'general');
+
+-- Function to get setting value
+CREATE OR REPLACE FUNCTION get_setting(setting_key TEXT)
+RETURNS JSONB AS $$
+  SELECT value FROM site_settings WHERE key = setting_key;
+$$ LANGUAGE sql STABLE;
+
+-- Function to update setting
+CREATE OR REPLACE FUNCTION update_setting(
+  setting_key TEXT,
+  new_value JSONB,
+  admin_id UUID
+)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE site_settings 
+  SET value = new_value, 
+      updated_by = admin_id, 
+      updated_at = NOW()
+  WHERE key = setting_key;
+END;
+$$ LANGUAGE plpgsql;
 ```
 
 ---
